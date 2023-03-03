@@ -1,0 +1,24 @@
+﻿<Window x:Class="OSIStudentSide.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        Title="{Binding Title}" Height="768" Width="1280" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0"></StackPanel>
+        <avalonEdit:TextEditor
+            Name="TextEditor"
+            SyntaxHighlighting="C++"
+            FontFamily="Consolas"
+            FontSize="10pt"
+            LineNumbersForeground="Black"
+            ShowLineNumbers="True"
+            Grid.Column="1">
+        </avalonEdit:TextEditor>
+    </Grid>
+</Window>

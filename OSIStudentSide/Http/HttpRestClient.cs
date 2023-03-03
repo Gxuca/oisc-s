@@ -1,0 +1,75 @@
+﻿using Newtonsoft.Json;
+using OSIStudentSide.Config;
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace OSIStudentSide.Http;
+
+public class HttpRestClient
+{
+    private readonly string apiUrl;
+    protected readonly RestClient client;
+    private readonly AppConfig appConfig;
+
+    public HttpRestClient(AppConfig appConfig)
+    {
+        this.apiUrl = appConfig.BaseUrl;
+        client = new RestClient();
+    }
+
+    public async Task<ApiResponse> ExecuteAsync(BaseRequest baseRequest)
+    {
+        //设置方法以及请求体数据类型
+        var request = new RestRequest(baseRequest.Method);
+        request.AddHeader("Content-Type", baseRequest.ContentType);
+        //添加请求头的token
+        if (!string.IsNullOrWhiteSpace(baseRequest.Token))
+        {
+            request.AddHeader("Token", baseRequest.Token);
+        }
+
+        //if (baseRequest.Parameter != null)
+        //    request.AddParameter("param", JsonConvert.SerializeObject(baseRequest.Parameter), ParameterType.RequestBody);
+        client.BaseUrl = new Uri(apiUrl + baseRequest.Route);
+        var response = await client.ExecuteAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            return JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+
+        else
+            return new ApiResponse()
+            {
+                Status = false,
+                Result = null,
+                Message = response.ErrorMessage
+            };
+    }
+
+    public async Task<ApiResponse<T>> ExecuteAsync<T>(BaseRequest baseRequest)
+    {
+        var request = new RestRequest(baseRequest.Method);
+        request.AddHeader("Content-Type", baseRequest.ContentType);
+        //添加请求头的token
+        if (!string.IsNullOrWhiteSpace(baseRequest.Token))
+        {
+            request.AddHeader("Token", baseRequest.Token);
+        }
+        //if (baseRequest.Parameter != null)
+        //    request.AddParameter("param", JsonConvert.SerializeObject(baseRequest.Parameter), ParameterType.RequestBody);
+        client.BaseUrl = new Uri(apiUrl + baseRequest.Route);
+        var response = await client.ExecuteAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            return JsonConvert.DeserializeObject<ApiResponse<T>>(response.Content);
+
+        else
+            return new ApiResponse<T>()
+            {
+                Status = false,
+                Message = response.ErrorMessage
+            };
+    }
+}
